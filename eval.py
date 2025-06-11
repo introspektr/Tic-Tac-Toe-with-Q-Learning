@@ -1,28 +1,9 @@
 import random
 from game import TicTacToeEnv
 from agent import QLearningAgent
+from utils import print_board, POSITION_NAMES, visualize_q_values
 
-POSITION_NAMES = {
-    0: "top-left", 1: "top-middle", 2: "top-right",
-    3: "middle-left", 4: "center", 5: "middle-right",
-    6: "bottom-left", 7: "bottom-middle", 8: "bottom-right"
-}
-
-def print_board(state):
-    """
-    Print the board state in a readable format.
-    """
-    # state is a string with 9 characters (' ', 'X', or 'O')
-    b = list(state)
-    print(f"""
-     {b[0]} | {b[1]} | {b[2]}
-    ---+---+---
-     {b[3]} | {b[4]} | {b[5]}
-    ---+---+---
-     {b[6]} | {b[7]} | {b[8]}
-    """)
-
-def evaluate(agent_path='q_table.pkl', num_games=1000, verbose=False, sample_games=5):
+def evaluate(agent_path='q_table.pkl', num_games=1000, verbose=False, sample_games=5, visualize=False):
     """
     Evaluate a trained Q-learning agent against a random opponent.
     
@@ -31,6 +12,7 @@ def evaluate(agent_path='q_table.pkl', num_games=1000, verbose=False, sample_gam
         num_games: Number of evaluation games to play
         verbose: Whether to print detailed game information
         sample_games: Number of sample games to print if verbose is True
+        visualize: Whether to visualize Q-values for sample games
     
     Returns:
         Dictionary with win/loss/draw statistics
@@ -50,6 +32,13 @@ def evaluate(agent_path='q_table.pkl', num_games=1000, verbose=False, sample_gam
         while not done:
             # Agent's move
             available = env.available_actions()
+            
+            # Visualize Q-values before agent makes a move
+            if visualize and verbose and game < sample_games:
+                print(f"\n--- Game {game + 1}, Turn {len(turn_log) + 1} ---")
+                print("Agent (X) is deciding:")
+                visualize_q_values(agent, state)
+            
             action = agent.choose_action(state, available)
             next_state, reward, done, winner = env.step(action, player='X')
             turn_log.append(('X', action, next_state))
@@ -80,7 +69,7 @@ def evaluate(agent_path='q_table.pkl', num_games=1000, verbose=False, sample_gam
 
         # Verbose output for first few games
         if verbose and game < sample_games:
-            print(f"\n--- Game {game + 1} ---")
+            print(f"\n--- Game {game + 1} Summary ---")
             for i, (player, action, resulting_state) in enumerate(turn_log):
                 print(f"Turn {i + 1}: Player {player} moved to {POSITION_NAMES[action]}")
                 print_board(resulting_state)
@@ -95,4 +84,4 @@ def evaluate(agent_path='q_table.pkl', num_games=1000, verbose=False, sample_gam
     return stats
 
 if __name__ == "__main__":
-    evaluate(verbose=True, sample_games=3) 
+    evaluate(verbose=True, sample_games=3, visualize=True) 

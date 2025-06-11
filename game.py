@@ -65,13 +65,10 @@ class TicTacToeEnv:
     def render(self):
         """
         Nicely prints the current board.
+        Uses the utils.print_board function.
         """
-        b = self.board
-        print(f" {b[0]} | {b[1]} | {b[2]}")
-        print("---+---+---")
-        print(f" {b[3]} | {b[4]} | {b[5]}")
-        print("---+---+---")
-        print(f" {b[6]} | {b[7]} | {b[8]}")
+        from utils import print_board
+        print_board(self.get_state())
 
 if __name__ == "__main__":
     env = TicTacToeEnv()
