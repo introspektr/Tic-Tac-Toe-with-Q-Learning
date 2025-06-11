@@ -88,16 +88,46 @@ def visualize_q_values(agent, state: str) -> None:
     # Reshape to 3x3 grid
     q_values = q_values.reshape(3, 3)
     
-    plt.figure(figsize=(6, 6))
-    plt.imshow(q_values, cmap='coolwarm', interpolation='nearest')
+    # Find non-NaN min and max for better color scaling
+    non_nan_values = q_values[~np.isnan(q_values)]
     
-    # Add text annotations
+    if len(non_nan_values) > 0:
+        # Calculate a meaningful color range to highlight differences
+        vmin, vmax = non_nan_values.min(), non_nan_values.max()
+        
+        # If all values are the same, create a small range around it
+        if vmin == vmax:
+            if vmin == 0:
+                vmin, vmax = -0.1, 0.1
+            else:
+                # Create range of ±10% around the value
+                margin = abs(vmin) * 0.1
+                vmin -= margin
+                vmax += margin
+        
+        # Ensure we include zero in the range for better intuition
+        if vmin > 0:
+            vmin = 0
+        if vmax < 0:
+            vmax = 0
+    else:
+        # Default range if no valid Q-values
+        vmin, vmax = -1, 1
+    
+    plt.figure(figsize=(6, 6))
+    heatmap = plt.imshow(q_values, cmap='coolwarm', interpolation='nearest', vmin=vmin, vmax=vmax)
+    
+    # Add text annotations with both raw values and normalized for visual clarity
     for i in range(3):
         for j in range(3):
             if not np.isnan(q_values[i, j]):
-                plt.text(j, i, f'{q_values[i, j]:.2f}', 
+                # Determine text color based on background intensity
+                val = q_values[i, j]
+                # Show the raw Q-value
+                plt.text(j, i, f'{val:.3f}', 
                          ha='center', va='center', 
-                         color='black', fontsize=12)
+                         color='black' if abs(val) < (vmax-vmin)*0.7 else 'white',
+                         fontsize=12)
             else:
                 pos_idx = i * 3 + j
                 plt.text(j, i, state[pos_idx], 
@@ -105,7 +135,7 @@ def visualize_q_values(agent, state: str) -> None:
                          color='white', fontsize=14, fontweight='bold')
     
     plt.title('Q-Values for Available Actions')
-    plt.colorbar(label='Q-Value')
+    plt.colorbar(heatmap, label='Q-Value')
     plt.xticks([])
     plt.yticks([])
     plt.show() 

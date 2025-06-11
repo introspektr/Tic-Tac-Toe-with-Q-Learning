@@ -28,11 +28,12 @@ def main():
     eval_parser.add_argument("--verbose", action="store_true", help="Print sample game logs")
     eval_parser.add_argument("--samples", type=int, default=5, help="Number of sample games to show")
     eval_parser.add_argument("--visualize", action="store_true", help="Visualize Q-values for sample games")
+    eval_parser.add_argument("--delay", type=float, default=0, help="Delay in seconds between moves (for better readability)")
 
     args = parser.parse_args()
 
     if args.command == "train":
-        print("🚀 Starting training...")
+        print("Starting training...")
         agent, stats = train(
             num_episodes=args.episodes,
             alpha=args.alpha,
@@ -41,20 +42,19 @@ def main():
             epsilon_decay=args.epsilon_decay,
             min_epsilon=args.min_epsilon,
             init_q=args.q_init,
-            stats_interval=1000  # You can make this configurable later
+            stats_interval=1000,  # You can make this configurable later
+            save_as=args.save_as
         )
-        agent.save(args.save_as)
-        print(f"✅ Training complete. Model saved as: {args.save_as}")
 
     elif args.command == "eval":
         try:
-            print(f"🔍 Evaluating model from: {args.model}")
             evaluate(
                 agent_path=args.model,
                 num_games=args.games,
                 verbose=args.verbose,
                 sample_games=args.samples,
-                visualize=args.visualize
+                visualize=args.visualize,
+                delay=args.delay
             )
         except FileNotFoundError:
             print(f"Error: Model file '{args.model}' not found.")

@@ -46,16 +46,28 @@ class QLearningAgent:
     def update(self, state, action, reward, next_state, next_available_actions, done):
         """
         Update the Q-value for the given transition.
+        
+        Standard Q-learning update rule:
+        Q(s,a) = Q(s,a) + alpha * [reward + gamma * max_a'(Q(s',a')) - Q(s,a)]
         """
         current_q = self.get_q(state, action)
-
+        
+        # Calculate the target value
         if done:
-            target = reward
+            # If terminal state, there's no future reward to consider
+            max_future_q = 0
         else:
-            future_q = max([self.get_q(next_state, a) for a in next_available_actions]) if next_available_actions else 0
-            target = reward + self.gamma * future_q
-
-        self.q_table[(state, action)] = current_q + self.alpha * (target - current_q)
+            # Get max Q-value for the next state
+            max_future_q = max([self.get_q(next_state, a) for a in next_available_actions]) if next_available_actions else 0
+        
+        # Calculate target: reward + discounted future value
+        target = reward + self.gamma * max_future_q
+        
+        # Update the Q-value
+        new_q = current_q + self.alpha * (target - current_q)
+        
+        # Store the updated Q-value
+        self.q_table[(state, action)] = new_q
 
     def decay_epsilon(self):
         """
