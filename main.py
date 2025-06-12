@@ -40,8 +40,8 @@ def main():
     eval_parser.add_argument("--samples", type=int, default=5, help="Number of sample games to show")
     eval_parser.add_argument("--visualize", action="store_true", help="Visualize Q-values for sample games")
     eval_parser.add_argument("--delay", type=float, default=0, help="Delay in seconds between moves (for better readability)")
-    eval_parser.add_argument("--opponent", type=str, choices=["random", "rule-based"], default="random", 
-                           help="Type of opponent to play against ('random' or 'rule-based')")
+    eval_parser.add_argument("--opponent", type=str, choices=["random", "rule-based", "human"], default="random", 
+                           help="Type of opponent to play against ('random', 'rule-based', or 'human')")
 
     args = parser.parse_args()
 
