@@ -25,8 +25,8 @@ Key features:
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/tic-tac-toe-q-learning.git
-cd tic-tac-toe-q-learning
+git clone https://github.com/introspektr/Tic-Tac-Toe-with-Q-Learning.git
+cd Tic-Tac-Toe-with-Q-Learning
 ```
 
 ### Set Up the Environment
