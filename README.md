@@ -31,7 +31,7 @@ cd tic-tac-toe-q-learning
 
 ### Set Up the Environment
 
-#### Option 1: Using Python Virtual Environment
+#### Use a Python Virtual Environment
 
 ```bash
 # Create a virtual environment
@@ -42,17 +42,6 @@ python -m venv venv
 venv\Scripts\activate
 # On macOS/Linux:
 source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-#### Option 2: Using Conda
-
-```bash
-# Create a conda environment
-conda create --name tictactoe-rl python=3.8
-conda activate tictactoe-rl
 
 # Install dependencies
 pip install -r requirements.txt
