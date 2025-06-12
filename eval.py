@@ -1,3 +1,8 @@
+# Cody Jackson, Jad Saad, Rafael Puente
+# CS 441 Final Programming Project
+# 6/13/2025
+# Tic-Tac-Toe with Q-Learning
+
 """
 eval.py — Evaluation functionality for the Tic-Tac-Toe Q-learning agent.
 
@@ -8,12 +13,13 @@ It also allows a human player to play against the trained agent.
 
 import random
 import time
+from typing import Dict, List, Optional, Tuple, Union, Any
 from environment import TicTacToeEnv
 from agent import QLearningAgent
-from utils import print_board, POSITION_NAMES, visualize_q_values
+from utils import print_board, POSITION_NAMES, visualize_q_values, name_to_index
 
 
-def get_rule_based_action(env):
+def get_rule_based_action(env: TicTacToeEnv) -> int:
     """
     Determine the best move for a rule-based opponent using simple heuristics.
     
@@ -69,7 +75,7 @@ def get_rule_based_action(env):
     return random.choice(available)
 
 
-def play_against_agent(agent_path='q_table.pkl', visualize=False, delay=0.5):
+def play_against_agent(agent_path: str = 'q_table.pkl', visualize: bool = False, delay: float = 0.5) -> Optional[str]:
     """
     Allow a human player to play against the trained agent.
     
@@ -83,7 +89,7 @@ def play_against_agent(agent_path='q_table.pkl', visualize=False, delay=0.5):
         delay (float): Delay in seconds between moves for better readability (default: 0.5)
         
     Returns:
-        str or None: The winner ('X' for agent, 'O' for human, None for draw)
+        Optional[str]: The winner ('X' for agent, 'O' for human, None for draw or abort)
     """
     print(f"Loading model from: {agent_path}")
     env = TicTacToeEnv()
@@ -160,7 +166,6 @@ def play_against_agent(agent_path='q_table.pkl', visualize=False, delay=0.5):
             try:
                 # Check if input is a position name
                 if user_input in [name.lower() for name in POSITION_NAMES.values()]:
-                    from utils import name_to_index
                     action = name_to_index(user_input)
                 else:
                     # Otherwise, assume it's a position number
@@ -200,7 +205,15 @@ def play_against_agent(agent_path='q_table.pkl', visualize=False, delay=0.5):
     return winner
 
 
-def evaluate(agent_path='q_table.pkl', num_games=1000, verbose=False, sample_games=5, visualize=False, delay=0, opponent_type='random'):
+def evaluate(
+    agent_path: str = 'q_table.pkl', 
+    num_games: int = 1000, 
+    verbose: bool = False, 
+    sample_games: int = 5, 
+    visualize: bool = False, 
+    delay: float = 0, 
+    opponent_type: str = 'random'
+) -> Dict[str, Union[int, float, str, None]]:
     """
     Evaluate a trained Q-learning agent against a specified opponent type.
     
@@ -220,7 +233,8 @@ def evaluate(agent_path='q_table.pkl', num_games=1000, verbose=False, sample_gam
         opponent_type (str): Type of opponent to play against - 'random', 'rule-based', or 'human' (default: 'random')
     
     Returns:
-        dict: Statistics dictionary with keys 'wins', 'losses', 'draws', and 'avg_game_length'
+        Dict[str, Union[int, float, str, None]]: Statistics dictionary with keys 'wins', 'losses', 'draws', 
+                                               'avg_game_length', and possibly 'human_game_result'
         
     Notes:
         The agent always plays as 'X' and moves first, while the opponent plays as 'O'.
@@ -242,12 +256,12 @@ def evaluate(agent_path='q_table.pkl', num_games=1000, verbose=False, sample_gam
     if verbose:
         print(f"Showing details for {sample_games} sample games")
     
-    stats = {'wins': 0, 'losses': 0, 'draws': 0, 'total_moves': 0}
+    stats: Dict[str, Union[int, float]] = {'wins': 0, 'losses': 0, 'draws': 0, 'total_moves': 0}
 
     for game in range(num_games):
         state = env.reset()
         done = False
-        turn_log = []
+        turn_log: List[Tuple[str, int, str]] = []
 
         while not done:
             # Agent's move

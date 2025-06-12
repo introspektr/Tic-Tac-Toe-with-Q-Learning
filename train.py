@@ -1,3 +1,8 @@
+# Cody Jackson, Jad Saad, Rafael Puente
+# CS 441 Final Programming Project
+# 6/13/2025
+# Tic-Tac-Toe with Q-Learning
+
 """
 train.py — Training functionality for the Tic-Tac-Toe Q-learning agent.
 
@@ -8,21 +13,22 @@ either against a random opponent or through self-play, tracking performance metr
 import random
 import time
 import matplotlib.pyplot as plt
+from typing import Dict, List, Tuple, Optional, Union, Any
 from environment import TicTacToeEnv
 from agent import QLearningAgent
 
 def train(
-    num_episodes=50000,
-    alpha=0.1,
-    gamma=0.9,
-    epsilon=1.0,
-    epsilon_decay=0.999,
-    min_epsilon=0.01,
-    init_q=0.5,
-    stats_interval=1000,
-    save_as='q_table.pkl',
-    opponent_type='random'
-):
+    num_episodes: int = 50000,
+    alpha: float = 0.1,
+    gamma: float = 0.9,
+    epsilon: float = 1.0,
+    epsilon_decay: float = 0.999,
+    min_epsilon: float = 0.01,
+    init_q: float = 0.5,
+    stats_interval: int = 1000,
+    save_as: str = 'q_table.pkl',
+    opponent_type: str = 'random'
+) -> Tuple[QLearningAgent, Dict[str, int]]:
     """
     Train a Q-learning agent to play Tic-Tac-Toe.
     
@@ -45,7 +51,7 @@ def train(
         opponent_type (str): Type of opponent - 'random' or 'self' (default: 'random')
         
     Returns:
-        tuple: (trained_agent, stats_dictionary)
+        Tuple[QLearningAgent, Dict[str, int]]: (trained_agent, stats_dictionary)
             - trained_agent: The trained QLearningAgent instance
             - stats_dictionary: Dictionary with keys 'wins', 'losses', and 'draws'
             
@@ -83,11 +89,11 @@ def train(
     
     start_time = time.time()
     
-    stats = {'wins': 0, 'losses': 0, 'draws': 0}
-    win_rates = []
-    loss_rates = []
-    draw_rates = []
-    epsilons = []
+    stats: Dict[str, int] = {'wins': 0, 'losses': 0, 'draws': 0}
+    win_rates: List[float] = []
+    loss_rates: List[float] = []
+    draw_rates: List[float] = []
+    epsilons: List[float] = []
 
     for ep in range(1, num_episodes + 1):
         state = env.reset()

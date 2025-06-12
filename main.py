@@ -1,3 +1,8 @@
+# Cody Jackson, Jad Saad, Rafael Puente
+# CS 441 Final Programming Project
+# 6/13/2025
+# Tic-Tac-Toe with Q-Learning
+
 """
 main.py — Command-line interface for the Tic-Tac-Toe Q-learning project.
 
@@ -7,10 +12,17 @@ a Q-learning agent for the Tic-Tac-Toe game, with configurable parameters.
 
 import argparse
 import sys
+from typing import NoReturn, Optional
 from train import train
 from eval import evaluate
 
-def main():
+def main() -> None:
+    """
+    Main entry point for the Tic-Tac-Toe Q-learning application.
+    
+    Parses command-line arguments and dispatches to the appropriate
+    training or evaluation function with the specified parameters.
+    """
     parser = argparse.ArgumentParser(
         description="Tic-Tac-Toe Q-Learning Agent Control Panel"
     )

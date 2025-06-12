@@ -1,3 +1,8 @@
+# Cody Jackson, Jad Saad, Rafael Puente
+# CS 441 Final Programming Project
+# 6/13/2025
+# Tic-Tac-Toe with Q-Learning
+
 """
 utils.py — Helper functions for the Tic-Tac-Toe Q-learning project.
 

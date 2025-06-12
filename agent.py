@@ -1,3 +1,8 @@
+# Cody Jackson, Jad Saad, Rafael Puente
+# CS 441 Final Programming Project
+# 6/13/2025
+# Tic-Tac-Toe with Q-Learning
+
 """
 agent.py — Q-learning agent implementation for the Tic-Tac-Toe game.
 
@@ -8,6 +13,7 @@ through reinforcement learning, using a Q-table to track state-action values.
 import random
 from collections import defaultdict
 import pickle
+from typing import Dict, List, Tuple, Optional, Union, Any, DefaultDict, Callable
 
 class QLearningAgent:
     """
@@ -27,7 +33,15 @@ class QLearningAgent:
         q_table (defaultdict): Table mapping (state, action) pairs to Q-values
     """
     
-    def __init__(self, alpha=0.1, gamma=0.9, epsilon=1.0, epsilon_decay=0.995, min_epsilon=0.01, init_q=0.5):
+    def __init__(
+        self, 
+        alpha: float = 0.1, 
+        gamma: float = 0.9, 
+        epsilon: float = 1.0, 
+        epsilon_decay: float = 0.995, 
+        min_epsilon: float = 0.01, 
+        init_q: float = 0.5
+    ) -> None:
         """
         Initialize a Q-learning agent.
         
@@ -47,9 +61,9 @@ class QLearningAgent:
         self.init_q = init_q
 
         # Use custom Q-value initialization
-        self.q_table = defaultdict(lambda: self.init_q)
+        self.q_table: DefaultDict[Tuple[str, int], float] = defaultdict(lambda: self.init_q)
 
-    def get_q(self, state, action):
+    def get_q(self, state: str, action: int) -> float:
         """
         Get the Q-value for a given state and action.
         
@@ -62,7 +76,7 @@ class QLearningAgent:
         """
         return self.q_table[(state, action)]
 
-    def choose_action(self, state, available_actions):
+    def choose_action(self, state: str, available_actions: List[int]) -> int:
         """
         Choose an action using epsilon-greedy strategy.
         
@@ -71,7 +85,7 @@ class QLearningAgent:
         
         Args:
             state (str): The current state represented as a string
-            available_actions (list): List of valid actions (board positions)
+            available_actions (List[int]): List of valid actions (board positions)
             
         Returns:
             int: The chosen action (board position 0-8)
@@ -85,7 +99,15 @@ class QLearningAgent:
         best_actions = [a for a, q in zip(available_actions, q_values) if q == max_q]
         return random.choice(best_actions)
 
-    def update(self, state, action, reward, next_state, next_available_actions, done):
+    def update(
+        self, 
+        state: str, 
+        action: int, 
+        reward: float, 
+        next_state: str, 
+        next_available_actions: List[int], 
+        done: bool
+    ) -> None:
         """
         Update the Q-value for the given transition using the Q-learning update rule.
         
@@ -96,7 +118,7 @@ class QLearningAgent:
             action (int): The action taken (board position 0-8)
             reward (float): The reward received
             next_state (str): The resulting state
-            next_available_actions (list): List of valid actions in the next state
+            next_available_actions (List[int]): List of valid actions in the next state
             done (bool): Whether the episode is done
         """
         current_q = self.get_q(state, action)
@@ -118,7 +140,7 @@ class QLearningAgent:
         # Store the updated Q-value
         self.q_table[(state, action)] = new_q
 
-    def decay_epsilon(self):
+    def decay_epsilon(self) -> float:
         """
         Decay the exploration rate (epsilon) after an episode.
         
@@ -131,7 +153,7 @@ class QLearningAgent:
         self.epsilon = max(self.min_epsilon, self.epsilon * self.epsilon_decay)
         return self.epsilon
 
-    def get_epsilon(self):
+    def get_epsilon(self) -> float:
         """
         Return the current exploration rate.
         
@@ -140,7 +162,7 @@ class QLearningAgent:
         """
         return self.epsilon
 
-    def save(self, filepath):
+    def save(self, filepath: str) -> None:
         """
         Save the Q-table to a file using pickle.
         
@@ -150,7 +172,7 @@ class QLearningAgent:
         with open(filepath, 'wb') as f:
             pickle.dump(dict(self.q_table), f)
 
-    def load(self, filepath):
+    def load(self, filepath: str) -> None:
         """
         Load the Q-table from a file using pickle, with error handling.
         
