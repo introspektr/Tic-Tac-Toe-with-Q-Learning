@@ -1,6 +1,8 @@
 """
-utils.py — Helper functions (board display, position mapping) for
-Tic‑Tac‑Toe Q‑learning project.
+utils.py — Helper functions for the Tic-Tac-Toe Q-learning project.
+
+This module provides utility functions for displaying and manipulating
+the Tic-Tac-Toe board, as well as visualizing the agent's Q-values.
 """
 
 from typing import Dict, List, Optional, Tuple, Union
@@ -18,10 +20,19 @@ POSITION_NAMES: Dict[int, str] = {
 
 def print_board(state: str) -> None:
     """
-    Pretty-print a Tic-Tac-Toe board given its state representation.
+    Print a Tic-Tac-Toe board in a human-readable format.
     
     Args:
-        state: 9-character string ('X', 'O', or ' ')
+        state (str): A 9-character string representation of the board,
+                    where each character is 'X', 'O', or ' ' (space)
+                    
+    Example:
+        >>> print_board('XO X O   ')
+             X | O |  
+            ---+---+---
+             X | O |  
+            ---+---+---
+               |   |  
     """
     b = list(state)
     print(f"""
@@ -34,16 +45,20 @@ def print_board(state: str) -> None:
 
 def index_to_name(index: int) -> str:
     """
-    Return the human-readable name for a board index.
+    Convert a board position index to its human-readable name.
     
     Args:
-        index: Board position index (0-8)
+        index (int): Board position index (0-8)
         
     Returns:
-        Human-readable position name
+        str: Human-readable position name (e.g., "top-left", "center")
         
     Raises:
-        ValueError: If index is out of bounds
+        ValueError: If the index is out of bounds
+        
+    Example:
+        >>> index_to_name(4)
+        'center'
     """
     if index not in POSITION_NAMES:
         raise ValueError(f"Index {index} is out of bounds (must be 0-8)")
@@ -51,16 +66,20 @@ def index_to_name(index: int) -> str:
 
 def name_to_index(name: str) -> int:
     """
-    Return the board index (0–8) corresponding to a human-readable name.
+    Convert a human-readable position name to its board index.
     
     Args:
-        name: Human-readable position name
+        name (str): Human-readable position name (e.g., "top-left", "center")
         
     Returns:
-        Board position index
+        int: Board position index (0-8)
         
     Raises:
-        ValueError: If name is not recognized
+        ValueError: If the name is not recognized
+        
+    Example:
+        >>> name_to_index("center")
+        4
     """
     for idx, pos_name in POSITION_NAMES.items():
         if pos_name.lower() == name.lower():
@@ -69,11 +88,19 @@ def name_to_index(name: str) -> int:
 
 def visualize_q_values(agent, state: str) -> None:
     """
-    Visualize the Q-values for available actions in a given state.
+    Create a heatmap visualization of Q-values for available actions.
+    
+    Generates a matplotlib figure showing the current board state and the
+    Q-values for each available move using a color-coded heatmap.
     
     Args:
-        agent: QLearningAgent instance
-        state: Current board state
+        agent: The Q-learning agent with a get_q method
+        state (str): Current board state as a 9-character string
+        
+    Notes:
+        - Occupied positions are shown with the player's mark ('X' or 'O')
+        - Available positions show the Q-value with 4 decimal places
+        - The color scale adapts to the range of Q-values present
     """
     # Create a heatmap of Q-values
     q_values = np.zeros(9)
@@ -123,8 +150,8 @@ def visualize_q_values(agent, state: str) -> None:
             if not np.isnan(q_values[i, j]):
                 # Determine text color based on background intensity
                 val = q_values[i, j]
-                # Show the raw Q-value
-                plt.text(j, i, f'{val:.3f}', 
+                # Show the raw Q-value with 4 decimal places
+                plt.text(j, i, f'{val:.4f}', 
                          ha='center', va='center', 
                          color='black' if abs(val) < (vmax-vmin)*0.7 else 'white',
                          fontsize=12)

@@ -1,3 +1,10 @@
+"""
+eval.py — Evaluation functionality for the Tic-Tac-Toe Q-learning agent.
+
+This module provides functions to evaluate a trained Q-learning agent's
+performance by playing against a random opponent and tracking win/loss statistics.
+"""
+
 import random
 import time
 from environment import TicTacToeEnv
@@ -8,16 +15,27 @@ def evaluate(agent_path='q_table.pkl', num_games=1000, verbose=False, sample_gam
     """
     Evaluate a trained Q-learning agent against a random opponent.
     
+    This function loads a trained agent from a file and evaluates its
+    performance by playing a specified number of games against a random
+    opponent. It collects statistics on win/loss/draw rates and can
+    optionally display detailed information about sample games.
+    
     Args:
-        agent_path: Path to the saved Q-table
-        num_games: Number of evaluation games to play
-        verbose: Whether to print detailed game information
-        sample_games: Number of sample games to print if verbose is True
-        visualize: Whether to visualize Q-values for sample games
-        delay: Delay in seconds between moves (for better readability)
+        agent_path (str): Path to the saved Q-table file (default: 'q_table.pkl')
+        num_games (int): Number of evaluation games to play (default: 1000)
+        verbose (bool): Whether to print detailed information about sample games (default: False)
+        sample_games (int): Number of sample games to show detailed info for if verbose=True (default: 5)
+        visualize (bool): Whether to visualize Q-values during sample games (default: False)
+        delay (float): Delay in seconds between moves for better readability during
+                      visualization (default: 0)
     
     Returns:
-        Dictionary with win/loss/draw statistics
+        dict: Statistics dictionary with keys 'wins', 'losses', and 'draws'
+        
+    Notes:
+        The agent always plays as 'X' and moves first, while the opponent plays as 'O'.
+        When visualize=True, heatmaps of Q-values will be displayed for available actions
+        in sample games.
     """
     print(f"Loading model from: {agent_path}")
     env = TicTacToeEnv()
@@ -30,7 +48,6 @@ def evaluate(agent_path='q_table.pkl', num_games=1000, verbose=False, sample_gam
         print(f"Showing details for {sample_games} sample games")
     
     stats = {'wins': 0, 'losses': 0, 'draws': 0}
-    start_time = time.time()
 
     for game in range(num_games):
         state = env.reset()
@@ -43,9 +60,9 @@ def evaluate(agent_path='q_table.pkl', num_games=1000, verbose=False, sample_gam
             
             # Visualize Q-values before agent makes a move
             if visualize and verbose and game < sample_games:
-                print("\n" + "="*50)
+                print("\n" + "="*60)
                 print(f"GAME {game + 1}, TURN {len(turn_log) + 1}")
-                print("="*50)
+                print("="*60)
                 print("Current board:")
                 print_board(state)
                 print("\nAgent (X) is calculating best move...")
@@ -69,8 +86,9 @@ def evaluate(agent_path='q_table.pkl', num_games=1000, verbose=False, sample_gam
 
             # Opponent's move (random)
             opp_action = random.choice(env.available_actions())
-            state, _, done, winner = env.step(opp_action, player='O')
-            turn_log.append(('O', opp_action, state))
+            next_state, opp_reward, done, winner = env.step(opp_action, player='O')
+            turn_log.append(('O', opp_action, next_state))
+            state = next_state
 
             if done:
                 if winner == 'X':
@@ -86,9 +104,9 @@ def evaluate(agent_path='q_table.pkl', num_games=1000, verbose=False, sample_gam
 
         # Verbose output for first few games
         if verbose and game < sample_games:
-            print("\n" + "="*50)
+            print("\n" + "="*60)
             print(f"GAME {game + 1} SUMMARY")
-            print("="*50)
+            print("="*60)
             
             print("\nMove sequence:")
             for i, (player, action, resulting_state) in enumerate(turn_log):
@@ -99,20 +117,15 @@ def evaluate(agent_path='q_table.pkl', num_games=1000, verbose=False, sample_gam
             
             result = 'Draw' if winner is None else f'Player {winner} wins'
             print(f"\nResult: {result}")
-            print("="*50 + "\n")
-
-    elapsed_time = time.time() - start_time
+            print("="*60 + "\n")
 
     # Summary statistics in a clear tabular format
     print("\n" + "="*60)
-    print(f"EVALUATION RESULTS ({num_games} games, {elapsed_time:.2f} seconds)")
+    print(f"EVALUATION RESULTS ({num_games} games)")
     print("="*60)
     print(f"  Win rate:   {stats['wins']:5d} / {num_games} ({stats['wins'] / num_games:.2%})")
     print(f"  Loss rate:  {stats['losses']:5d} / {num_games} ({stats['losses'] / num_games:.2%})")
     print(f"  Draw rate:  {stats['draws']:5d} / {num_games} ({stats['draws'] / num_games:.2%})")
     print("="*60)
 
-    return stats
-
-if __name__ == "__main__":
-    evaluate(verbose=True, sample_games=3, visualize=True, delay=0.5) 
+    return stats 

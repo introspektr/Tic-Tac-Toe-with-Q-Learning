@@ -1,35 +1,71 @@
+"""
+environment.py — Tic-Tac-Toe environment for reinforcement learning.
+
+This module implements the Tic-Tac-Toe game as a reinforcement learning environment,
+providing methods to track game state, execute moves, and compute rewards.
+"""
+
 class TicTacToeEnv:
+    """
+    Tic-Tac-Toe environment for reinforcement learning.
+    
+    This environment implements the game of Tic-Tac-Toe as a reinforcement learning
+    environment following a similar interface to OpenAI Gym. It maintains the game
+    state and provides methods for taking actions and observing rewards.
+    
+    Attributes:
+        board (list): The game board represented as a list of 9 characters (' ', 'X', or 'O')
+    """
+    
     def __init__(self):
+        """Initialize a new Tic-Tac-Toe environment with an empty board."""
         self.reset()
 
     def reset(self):
         """
-        Start a new game with an empty board.
+        Reset the environment to the starting state (empty board).
+        
+        Returns:
+            str: The initial state representation
         """
         self.board = [' ' for _ in range(9)]
         return self.get_state()
 
     def get_state(self):
         """
-        Returns the current board as a string for easy hashing.
-        E.g. 'XO X O   '
+        Convert the board to a string representation for easier hashing in Q-table.
+        
+        Returns:
+            str: The current board state as a 9-character string (e.g., 'XO X O   ')
         """
         return ''.join(self.board)
 
     def available_actions(self):
         """
-        List of indices where the board is empty.
+        Get a list of available (empty) positions on the board.
+        
+        Returns:
+            list: Indices of empty positions (0-8)
         """
         return [i for i, cell in enumerate(self.board) if cell == ' ']
 
     def step(self, action, player):
         """
-        Executes a move by the given player.
-        Returns (next_state, reward, done, winner)
-        Reward from the perspective of the player making the move:
-            +1 = player wins
-            -1 = player loses (opponent has won)
-             0 = draw or ongoing
+        Execute a move by placing the player's mark at the specified position.
+        
+        Args:
+            action (int): Board position to place the mark (0-8)
+            player (str): The player making the move ('X' or 'O')
+            
+        Returns:
+            tuple: (next_state, reward, done, winner)
+                - next_state (str): The resulting board state
+                - reward (float): Reward value (1 for win, -1 for loss, 0 otherwise)
+                - done (bool): Whether the game is finished
+                - winner (str or None): The winning player ('X', 'O') or None
+                
+        Raises:
+            ValueError: If the specified position is already occupied
         """
         if self.board[action] != ' ':
             raise ValueError(f"Invalid action: Cell {action} is already filled.")
@@ -48,8 +84,12 @@ class TicTacToeEnv:
 
     def check_winner(self):
         """
-        Checks for a winning condition.
-        Returns 'X', 'O', or None.
+        Check if there's a winner on the board.
+        
+        Checks all rows, columns, and diagonals for a winning condition.
+        
+        Returns:
+            str or None: The winning player ('X', 'O') or None if no winner
         """
         b = self.board
         lines = [
@@ -64,18 +104,9 @@ class TicTacToeEnv:
 
     def render(self):
         """
-        Nicely prints the current board.
-        Uses the utils.print_board function.
+        Print a human-readable representation of the board.
+        
+        Uses the utils.print_board function to display the current board state.
         """
         from utils import print_board
-        print_board(self.get_state())
-
-if __name__ == "__main__":
-    env = TicTacToeEnv()
-    env.render()
-    print("Available actions:", env.available_actions())
-
-    print("\nSimulating moves...")
-    state, reward, done, winner = env.step(0, 'X')
-    env.render()
-    print(f"Reward: {reward}, Done: {done}, Winner: {winner}") 
+        print_board(self.get_state()) 
